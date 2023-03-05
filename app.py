@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from dataclasses import dataclass, is_dataclass, asdict
 from typing import Tuple
+import pandas as pd
 
 
 class Counter:
@@ -36,6 +37,7 @@ class Counter:
         cls.__print(cls.subdirs, cls.files, size)
         return total_size, count_files
 
+    @staticmethod
     def __print(subdirs: int, files: int, size: int):
         print(
             f'Subdirs: {subdirs}, Files: {files}, Size: {size}',
@@ -133,7 +135,7 @@ def make_output(directory: str) -> Directory:
     return out
 
 
-def output_to_json(out: dict):
+def output_to_json(out: Directory):
     with open('out_iter.json', 'w') as f:
         json.dump(out, f, indent=4, cls=EnhancedJSONEncoder)
 
@@ -147,13 +149,40 @@ def readable_bytes(size) -> str:
     return f'{round(size, 1)}{suf[i]}'
 
 
-def go_tree(tree: dict, name: str):
-    if tree[name]['isdir']:
-        print(f"Direcory: {name} Size: {tree[name]['readable_size']} Subdirs: {tree[name]['subdirs']} Files: {tree[name]['files']}")
-        for key in tree[name]['folder']:
-            go_tree(tree[name]['folder'], key)
+def straighten_dict(out: Directory, out_list: list, p_id: int):
+    if hasattr(out, 'folder'):
+        out_list.append(
+            {
+                'id': out.id,
+                'name': out.name,
+                'size': out.size,
+                'subdirs': out.subdirs,
+                'files': out.files,
+                'modified': out.modified,
+                'type': out.__class__.__name__,
+                'parent_id': p_id
+            }
+        )
+        for key in out.folder:
+            straighten_dict(key, out_list, out.id)
     else:
-        print(f"File: {name} Size: {tree[name]['readable_size']}")
+        out_list.append(
+            {
+                'id': out.id,
+                'name': out.name,
+                'size': out.size,
+                'modified': out.modified,
+                'type': out.__class__.__name__,
+                'parent_id': p_id
+            }
+        )
+
+
+def output_to_csv(out: Directory):
+    out_list = []
+    parent_id = -1
+    straighten_dict(out, out_list, parent_id)
+    pd.DataFrame(out_list).to_csv('out.csv', index=False)
 
 
 def main():
@@ -164,7 +193,7 @@ def main():
 
     out = make_output(directory)
     output_to_json(out)
-    # go_tree(out, directory)
+    output_to_csv(out)
     print()
 
 
