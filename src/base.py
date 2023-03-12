@@ -1,7 +1,7 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import Tuple, Generator
+from typing import Tuple
 from pathlib import Path
 
 

@@ -53,7 +53,10 @@ def to_csv(out: Directory, filename):
     parent_id = -1
     straighten_dict(out, out_list, parent_id)
     with open(filename, 'w') as csvfile:
-        fieldnames = ["id", "name", "size", "subdirs", "files", "modified", "type", "parent_id"]
+        fieldnames = [
+            "id", "name", "size", "subdirs",
+            "files", "modified", "type", "parent_id"
+        ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(out_list)

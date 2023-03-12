@@ -1,13 +1,19 @@
 import os
-import sys
 import upload
 from base import make_output
 import click
 
 
 @click.command()
-@click.option('--path', '-p', default='.', show_default=True, help='Enter the path to the directory', type=click.Path(exists=True, dir_okay=True, readable=True))
-@click.option('--output', '-o', default=('csv', 'output.csv'), show_default=True, help="Output to file", type=(str, str))
+@click.option(
+    '--path', '-p', default='.', show_default=True,
+    help='Enter the path to the directory',
+    type=click.Path(exists=True, dir_okay=True, readable=True)
+)
+@click.option(
+    '--output', '-o', default=('csv', 'output.csv'), show_default=True,
+    help="Output to file", type=(str, str)
+)
 def main(path, output):
     directory = os.path.abspath(path)
     out = make_output(directory)
