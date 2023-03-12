@@ -12,8 +12,8 @@ class EnhancedJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-def to_json(out: Directory):
-    with open('out_iter.json', 'w') as f:
+def to_json(out: Directory, filename):
+    with open(filename, 'w') as f:
         json.dump(out, f, indent=4, cls=EnhancedJSONEncoder)
 
 
@@ -48,22 +48,22 @@ def straighten_dict(out: Directory, out_list: list, p_id: int):
         )
 
 
-def to_csv(out: Directory):
+def to_csv(out: Directory, filename):
     out_list = []
     parent_id = -1
     straighten_dict(out, out_list, parent_id)
-    with open('out.csv', 'w') as csvfile:
+    with open(filename, 'w') as csvfile:
         fieldnames = ["id", "name", "size", "subdirs", "files", "modified", "type", "parent_id"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(out_list)
 
 
-def to_sqlite3(out: Directory):
+def to_sqlite3(out: Directory, filename):
     out_list = []
     parent_id = -1
     straighten_dict(out, out_list, parent_id)
-    conn = sqlite3.connect('out.db')
+    conn = sqlite3.connect(filename)
     cur = conn.cursor()
     cur.execute("""
         CREATE TABLE IF NOT EXISTS files(
