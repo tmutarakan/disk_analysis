@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Generator
 import upload
 from base import Directory, File
 
@@ -47,7 +47,7 @@ class Counter:
         sys.stdout.flush()
 
 
-def getAllDirAndFile(path: str) -> Tuple[int, int, int, Counter]:
+def getAllDirAndFile(path: Path) -> Tuple[int, int, int, Counter]:
     itemList = Path(path).glob('*')     # Получить все файлы в текущем каталоге
     items = []      # Обработка каждого файла
     total_size = count_files = subdirs = d_size = 0
@@ -90,7 +90,7 @@ def getAllDirAndFile(path: str) -> Tuple[int, int, int, Counter]:
     yield total_size, subdirs, count_files, items
 
 
-def make_output(directory: str) -> Directory:
+def make_output(directory: Path) -> Directory:
     modified = os.path.getmtime(directory)
     for size, subdirs, files, folder in getAllDirAndFile(directory):
         out = Directory(
@@ -124,6 +124,7 @@ def main():
     out = make_output(directory)
     upload.to_json(out)
     upload.to_csv(out)
+    upload.to_sqlite3(out)
     print()
 
 
