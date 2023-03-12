@@ -80,6 +80,6 @@ def to_sqlite3(out: Directory):
     conn.commit()
     for elem in out_list:
         cur.execute(
-            "INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?);",
+            "INSERT INTO files VALUES(?, ?, ?, ?, ?, ?, ?, ?);",
             [_ for _ in elem.values()])
     conn.commit()
