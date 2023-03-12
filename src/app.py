@@ -1,10 +1,9 @@
 import os
 import sys
-import json
 from pathlib import Path
-from dataclasses import dataclass, is_dataclass, asdict
 from typing import Tuple
-import pandas as pd
+import upload
+from base import Directory, File
 
 
 class Counter:
@@ -46,34 +45,6 @@ class Counter:
             flush=True
         )
         sys.stdout.flush()
-
-
-class EnhancedJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if is_dataclass(obj):
-            return asdict(obj)
-        return super().default(obj)
-
-
-@dataclass
-class Directory:
-    id: int
-    name: str
-    readable_size: str
-    size: int
-    subdirs: int
-    files: int
-    modified: float
-    folder: list
-
-
-@dataclass
-class File:
-    id: int
-    name: str
-    readable_size: str
-    size: int
-    modified: float = 0
 
 
 def getAllDirAndFile(path: str) -> Tuple[int, int, int, Counter]:
@@ -135,11 +106,6 @@ def make_output(directory: str) -> Directory:
     return out
 
 
-def output_to_json(out: Directory):
-    with open('out_iter.json', 'w') as f:
-        json.dump(out, f, indent=4, cls=EnhancedJSONEncoder)
-
-
 def readable_bytes(size) -> str:
     suf = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB']
     i = 0
@@ -149,42 +115,6 @@ def readable_bytes(size) -> str:
     return f'{round(size, 1)}{suf[i]}'
 
 
-def straighten_dict(out: Directory, out_list: list, p_id: int):
-    if hasattr(out, 'folder'):
-        out_list.append(
-            {
-                'id': out.id,
-                'name': out.name,
-                'size': out.size,
-                'subdirs': out.subdirs,
-                'files': out.files,
-                'modified': out.modified,
-                'type': out.__class__.__name__,
-                'parent_id': p_id
-            }
-        )
-        for key in out.folder:
-            straighten_dict(key, out_list, out.id)
-    else:
-        out_list.append(
-            {
-                'id': out.id,
-                'name': out.name,
-                'size': out.size,
-                'modified': out.modified,
-                'type': out.__class__.__name__,
-                'parent_id': p_id
-            }
-        )
-
-
-def output_to_csv(out: Directory):
-    out_list = []
-    parent_id = -1
-    straighten_dict(out, out_list, parent_id)
-    pd.DataFrame(out_list).to_csv('out.csv', index=False)
-
-
 def main():
     if len(sys.argv) > 1:
         directory = os.path.abspath(sys.argv[1])
@@ -192,8 +122,8 @@ def main():
         directory = os.path.abspath('.')
 
     out = make_output(directory)
-    output_to_json(out)
-    output_to_csv(out)
+    upload.to_json(out)
+    upload.to_csv(out)
     print()
 
 
