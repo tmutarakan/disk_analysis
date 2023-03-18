@@ -1,5 +1,5 @@
 import os
-import upload
+import filedump
 from base import make_output
 import click
 
@@ -18,11 +18,11 @@ def main(path, output):
     directory = os.path.abspath(path)
     out = make_output(directory)
     if output[0] == 'csv':
-        upload.to_csv(out, output[1])
+        filedump.to_csv(out, output[1])
     elif output[0] == 'json':
-        upload.to_json(out, output[1])
+        filedump.to_json(out, output[1])
     elif output[0] == 'sqlite3':
-        upload.to_sqlite3(out, output[1])
+        filedump.to_sqlite3(out, output[1])
     print()
 
 
