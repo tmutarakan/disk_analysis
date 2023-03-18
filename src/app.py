@@ -12,7 +12,8 @@ import click
 )
 @click.option(
     '--output', '-o', default=('csv', 'output.csv'), show_default=True,
-    help="Output to file", type=(str, str)
+    help="""Output to file.
+    Supported formats: csv, json, sqlite3, pickle""", type=(str, str)
 )
 def main(path, output):
     directory = os.path.abspath(path)
