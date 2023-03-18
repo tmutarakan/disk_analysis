@@ -40,13 +40,12 @@ def to_sqlite3(out: Directory, filename):
     cur.execute("""
         CREATE TABLE IF NOT EXISTS files(
             id INT PRIMARY KEY,
-            myid INT,
             name TEXT,
             size INT,
             subdirs INT,
             files INT,
             modified FLOAT,
-            type TEXT
+            type TEXT,
             parent_id INT);
         """)
     conn.commit()
