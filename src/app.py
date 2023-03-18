@@ -23,6 +23,8 @@ def main(path, output):
         filedump.to_json(out, output[1])
     elif output[0] == 'sqlite3':
         filedump.to_sqlite3(out, output[1])
+    elif output[0] == 'pickle':
+        filedump.to_pickle(out, output[1])
     print()
 
 

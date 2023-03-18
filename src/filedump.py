@@ -1,8 +1,9 @@
 import json
 import csv
+import sqlite3
+import pickle
 from dataclasses import is_dataclass, asdict
 from base import Directory, straighten_dict
-import sqlite3
 
 
 class EnhancedJSONEncoder(json.JSONEncoder):
@@ -12,12 +13,12 @@ class EnhancedJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-def to_json(out: Directory, filename):
+def to_json(out: Directory, filename: str):
     with open(filename, 'w') as f:
         json.dump(out, f, indent=4, cls=EnhancedJSONEncoder)
 
 
-def to_csv(out: Directory, filename):
+def to_csv(out: Directory, filename: str):
     out_list = []
     parent_id = -1
     straighten_dict(out, out_list, parent_id)
@@ -31,7 +32,7 @@ def to_csv(out: Directory, filename):
         writer.writerows(out_list)
 
 
-def to_sqlite3(out: Directory, filename):
+def to_sqlite3(out: Directory, filename: str):
     out_list = []
     parent_id = -1
     straighten_dict(out, out_list, parent_id)
@@ -54,3 +55,12 @@ def to_sqlite3(out: Directory, filename):
             "INSERT INTO files VALUES(?, ?, ?, ?, ?, ?, ?, ?);",
             [_ for _ in elem.values()])
     conn.commit()
+    conn.close()
+
+
+def to_pickle(out: Directory, filename: str):
+    out_list = []
+    parent_id = -1
+    straighten_dict(out, out_list, parent_id)
+    with open(filename, 'wb') as f:
+        pickle.dump(out_list, f)
