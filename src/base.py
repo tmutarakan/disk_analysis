@@ -133,3 +133,34 @@ def readable_bytes(size) -> str:
         size /= 1024
         i += 1
     return f'{round(size, 1)}{suf[i]}'
+
+
+def straighten_dict(out: Directory, out_list: list, p_id: int):
+    if hasattr(out, 'folder'):
+        out_list.append(
+            {
+                'id': out.id,
+                'name': out.name,
+                'size': out.size,
+                'subdirs': out.subdirs,
+                'files': out.files,
+                'modified': out.modified,
+                'type': out.__class__.__name__,
+                'parent_id': p_id
+            }
+        )
+        for key in out.folder:
+            straighten_dict(key, out_list, out.id)
+    else:
+        out_list.append(
+            {
+                'id': out.id,
+                'name': out.name,
+                'size': out.size,
+                'subdirs': None,
+                'files': None,
+                'modified': out.modified,
+                'type': out.__class__.__name__,
+                'parent_id': p_id
+            }
+        )

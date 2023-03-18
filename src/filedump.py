@@ -1,7 +1,7 @@
 import json
 import csv
 from dataclasses import is_dataclass, asdict
-from base import Directory
+from base import Directory, straighten_dict
 import sqlite3
 
 
@@ -15,37 +15,6 @@ class EnhancedJSONEncoder(json.JSONEncoder):
 def to_json(out: Directory, filename):
     with open(filename, 'w') as f:
         json.dump(out, f, indent=4, cls=EnhancedJSONEncoder)
-
-
-def straighten_dict(out: Directory, out_list: list, p_id: int):
-    if hasattr(out, 'folder'):
-        out_list.append(
-            {
-                'id': out.id,
-                'name': out.name,
-                'size': out.size,
-                'subdirs': out.subdirs,
-                'files': out.files,
-                'modified': out.modified,
-                'type': out.__class__.__name__,
-                'parent_id': p_id
-            }
-        )
-        for key in out.folder:
-            straighten_dict(key, out_list, out.id)
-    else:
-        out_list.append(
-            {
-                'id': out.id,
-                'name': out.name,
-                'size': out.size,
-                'subdirs': None,
-                'files': None,
-                'modified': out.modified,
-                'type': out.__class__.__name__,
-                'parent_id': p_id
-            }
-        )
 
 
 def to_csv(out: Directory, filename):
