@@ -1,0 +1,1 @@
+.\venv\Scripts\python .\src\app-cui.py
