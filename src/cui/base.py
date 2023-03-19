@@ -3,7 +3,7 @@ from urwid import (
     SimpleFocusListWalker, ExitMainLoop, Padding,
     MainLoop, Frame, AttrWrap
 )
-import pickle
+from base import readable_bytes
 
 
 WIDTH = 80
@@ -69,21 +69,12 @@ class MainMenu:
 
 
 def print_directory(obj: dict):
-    LENGTH = WIDTH - len(f"{obj['name']}{obj['subdirs']}{obj['files']}{obj['size']}") - 2
-    return f"{obj['name']}{' ' * LENGTH}{obj['subdirs']} {obj['files']} {obj['size']}"
+    size = readable_bytes(obj['size'])
+    LENGTH = WIDTH - len(f"{obj['name']}{obj['subdirs']}{obj['files']}{len(size)}") - 2
+    return f"{obj['name']}{' ' * LENGTH}{obj['subdirs']} {obj['files']} {size}"
 
 
 def print_file(obj: dict):
-    LENGTH = WIDTH - len(f"{obj['name']}{obj['size']}")
-    return f"{obj['name']}{' ' * LENGTH}{obj['size']}"
-
-
-def main():
-    with open('out.pickle', 'rb') as f:
-        data = pickle.load(f)
-    curr_menu = MainMenu(data)
-    curr_menu.run()
-
-
-if __name__ == '__main__':
-    main()
+    size = readable_bytes(obj['size'])
+    LENGTH = WIDTH - len(f"{obj['name']}{len(size)}")
+    return f"{obj['name']}{' ' * LENGTH}{size}"
